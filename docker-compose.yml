@@ -1,0 +1,42 @@
+version: '3.5'
+services:
+  canvastests:
+    build: .
+    command: bundle exec rspec
+    environment: 
+      - SELENIUM_HOST=selenium
+      - SELENIUM_PORT=4444
+      - TEST_APP_ROOT_URL=http://canvasweb
+      - TEST_PORT=3000
+    volumes:
+      - bundle_cache:/bundle
+      - .:/app
+    networks:
+      - bravendev
+    stdin_open: true
+    # Allow interactive byebug sessions.
+    tty: true
+    depends_on:
+      - selenium
+    
+  selenium:
+    image: selenium/standalone-chrome:3.141.59-xenon
+      # Debug version enables VNC ability
+      # Bind selenium port & VNC port
+    ports: ['4444:4444', '5900:5900']
+    volumes:
+      - /dev/shm:/dev/shm
+    networks:
+      - bravendev
+    #logging:
+    #  driver: none
+      # Disable noisy logs.
+      
+# Note all Braven web app docker dev envs use this same network so they can talk to each other.
+# E.g. the hostname joinweb will resolve inside the ssoweb container if they are on the same docker network.
+networks:
+  bravendev:
+    name: braven_dev_network
+
+volumes:
+  bundle_cache:

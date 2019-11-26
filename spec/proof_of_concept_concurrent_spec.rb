@@ -17,11 +17,11 @@ describe "Proof Of Concept - concurrent requests", :capybara, js: true do
         session = Capybara::Session.new(:selenium)
 
         puts "Thread #{i}: visiting URL: /health_check?thread=#{i}&visit=1"
-        session.visit Capybara.app_host + "/health_check?thread=#{i}&visit=1"
+        session.visit "/health_check?thread=#{i}&visit=1"
         expect(session).to have_content("canvas ok")
 
         puts "Thread #{i}: visiting URL: /health_check?thread=#{i}&visit=2"
-        session.visit Capybara.app_host + "/health_check?thread=#{i}&visit=2"
+        session.visit "/health_check?thread=#{i}&visit=2"
         expect(session).to have_content("canvas ok")
 
         #Thread.current[:result] = "Thread #{i} done and returning: #{StringIO.new(session.driver.browser.page_source).read}"

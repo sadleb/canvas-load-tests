@@ -35,6 +35,16 @@ end
 
 # Connect to remote Selenium host to run tests using the Chrome driver.
 if ENV['SELENIUM_HOST']
+# Note: if the HTTP timeout parameter below doesn't work, try this:
+#  client = Selenium::WebDriver::Remote::Http::Default.new
+#  client.read_timeout = 120
+#  ...
+#  Capybara::Selenium::Driver.new(
+#    ...,
+#    http_client: client
+#    ...
+#  )
+
   #args = ['--no-default-browser-check', '--start-maximized', '--whitelisted-ips', '--no-sandbox', '--disable-extensions']
   args = ['--headless', '--whitelisted-ips', '--no-sandbox', '--disable-extensions', 'enable-features=NetworkService,NetworkServiceInProcess']
   caps = Selenium::WebDriver::Remote::Capabilities.chrome("chromeOptions" => {"args" => args})
@@ -42,6 +52,7 @@ if ENV['SELENIUM_HOST']
     Capybara::Selenium::Driver.new(
         app,
         browser: :remote,
+        timeout: 120,
         url: "http://#{ENV['SELENIUM_HOST']}:#{ENV['SELENIUM_PORT']}/wd/hub",
         desired_capabilities: caps
     )
@@ -85,6 +96,7 @@ RSpec.configure do |config|
   config.before(:each) do
     Capybara.app_host = "#{ENV['TEST_APP_ROOT_URL']}:#{ENV['TEST_PORT']}"
     Capybara.run_server = false # We're running against a remote app, don't boot the rack application
+    Capybara.default_max_wait_time = 20 # seconds to wait for AJAX calls to modify the DOM. We want things to fail on the app server, not on our end.
   end
  
   config.after(:each) do

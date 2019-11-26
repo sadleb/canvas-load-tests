@@ -90,6 +90,8 @@ RSpec.configure do |config|
   # config.filter_gems_from_backtrace("gem name")
   #
 
+  # Note: in the load tests, we're doing manual session management so we can concurrently do stuff in multiple threads.
+  # Instead of things like expect(page).to have_content("blah"), you should use expect(session).to have_content("blah")
   config.include Capybara::DSL
 
   # Point Capybara at our remote hosted web app to test against

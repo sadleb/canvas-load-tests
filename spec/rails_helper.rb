@@ -46,7 +46,7 @@ if ENV['SELENIUM_HOST']
 #  )
 
   #args = ['--no-default-browser-check', '--start-maximized', '--whitelisted-ips', '--no-sandbox', '--disable-extensions']
-  args = ['--headless', '--whitelisted-ips', '--no-sandbox', '--disable-extensions', 'enable-features=NetworkService,NetworkServiceInProcess']
+  args = ['--headless', '--whitelisted-ips', '--no-sandbox', '--disable-dev-shm-usage', '--disable-features=VizDisplayCompositor', '--disable-extensions', '--enable-features=NetworkService,NetworkServiceInProcess']
   caps = Selenium::WebDriver::Remote::Capabilities.chrome("chromeOptions" => {"args" => args})
   Capybara.register_driver :selenium do |app|
     Capybara::Selenium::Driver.new(
@@ -98,7 +98,7 @@ RSpec.configure do |config|
   config.before(:each) do
     Capybara.app_host = "#{ENV['TEST_APP_ROOT_URL']}:#{ENV['TEST_PORT']}"
     Capybara.run_server = false # We're running against a remote app, don't boot the rack application
-    Capybara.default_max_wait_time = 20 # seconds to wait for AJAX calls to modify the DOM. We want things to fail on the app server, not on our end.
+    Capybara.default_max_wait_time = 30 # seconds to wait for AJAX calls to modify the DOM. We want things to fail on the app server, not on our end.
   end
  
   config.after(:each) do

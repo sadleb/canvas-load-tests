@@ -11,10 +11,14 @@ services:
       - /dev/shm:/dev/shm
     networks:
       - bravendev
+    environment:
+     # Increasing these lets you spawn more concurrent chrome sessions until you hit memory limits.
+     NODE_MAX_INSTANCES: 100
+     NODE_MAX_SESSION: 100
     # Disable noisy logs.
     logging:
       driver: none
-
+    
   # To run load tests, just run: 
   #   docker-compose up    
   # To run a single test, run:

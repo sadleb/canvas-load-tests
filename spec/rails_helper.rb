@@ -46,8 +46,8 @@ if ENV['SELENIUM_HOST']
 #  )
 
   #args = ['--no-default-browser-check', '--start-maximized', '--whitelisted-ips', '--no-sandbox', '--disable-extensions']
-  args = ['--headless', '--whitelisted-ips', '--no-sandbox', '--disable-dev-shm-usage', '--disable-features=VizDisplayCompositor', '--disable-extensions', '--enable-features=NetworkService,NetworkServiceInProcess']
-  caps = Selenium::WebDriver::Remote::Capabilities.chrome("chromeOptions" => {"args" => args})
+  args = ['--headless', '--no-sandbox', '--disable-gpu', '--disable-dev-shm-usage', '--disable-extensions', '--disable-features=VizDisplayCompositor', '--enable-features=NetworkService,NetworkServiceInProcess']
+  caps = Selenium::WebDriver::Remote::Capabilities.chrome("goog:chromeOptions" => {"args" => args})
   Capybara.register_driver :selenium do |app|
     Capybara::Selenium::Driver.new(
         app,

@@ -1,0 +1,55 @@
+version: '3.7'
+services:
+
+  selenium:
+    image: selenium/standalone-chrome:3.141.59-xenon
+    ports: ['4444:4444']
+    # Debug version enables VNC ability.
+    #image: selenium/standalone-chrome-debug:3.141.59-xenon
+    #ports: ['4444:4444', '5900:5900']
+    volumes:
+      - /dev/shm:/dev/shm
+    networks:
+      - bravendev
+    environment:
+     # Increasing these lets you spawn more concurrent chrome sessions until you hit memory limits.
+     NODE_MAX_INSTANCES: 100
+     NODE_MAX_SESSION: 100
+    # Disable noisy logs.
+    logging:
+      driver: none
+
+  ###################################
+  # Instructions to run
+  ###################################    
+  # To run load tests, just run: 
+  #   docker-compose up    
+  # To run a single test, run:
+  #   TEST_NAME=name docker-compose up
+  canvastests:
+    build: .
+    command: bundle exec rspec ${TEST_NAME:-spec}
+    environment: 
+      - SELENIUM_HOST=selenium
+      - SELENIUM_PORT=4444
+      - TEST_APP_ROOT_URL=http://canvasweb
+      - TEST_PORT=3000
+    volumes:
+      - bundle_cache:/bundle
+      - .:/app
+    networks:
+      - bravendev
+    stdin_open: true
+    # Allow interactive byebug sessions.
+    tty: true
+    depends_on:
+      - selenium
+
+# Note all Braven web app docker dev envs use this same network so they can talk to each other.
+# E.g. the hostname joinweb will resolve inside the ssoweb container if they are on the same docker network.
+networks:
+  bravendev:
+    name: braven_dev_network
+
+volumes:
+  bundle_cache:

@@ -1,31 +1,76 @@
+# This compose file sets up a Selenium Grid HUB where one or more selenium nodes
+# connect to it so that you can run selenium tests in parallel. It sets up a 
+# Capybara/Rspec test suite that has some load tests to run.
+# See these for inspiration: 
+#   - https://github.com/SeleniumHQ/docker-selenium
+#   - https://vitobotta.com/2019/09/04/rails-parallel-system-tests-selenium-docker/
+#   - https://stackoverflow.com/questions/7565844/running-parallel-selenium-tests-with-capybara
+#
+# The local hub can be viewed here 
+# http://localhost:4444/grid/console
+#
+# View it's status and wait for it to be ready here:
+# http://localhost:4444/wd/hub/status
+#
+# NOTE: I banged my head for days trying to get this to work and kept getting the error below.
+# I FINALLY got it working by changing "chromeOptions" to "goog:chromeOptions" when configuring the driver.
+# Without that, the following error would happen:
+#
+#      Selenium::WebDriver::Error::UnknownError:
+#       unknown error: Chrome failed to start: exited abnormally
+#         (unknown error: DevToolsActivePort file doesn't exist)
+#         (The process started from chrome location /usr/bin/google-chrome is no longer running, so ChromeDriver is assuming that Chrome has crashed.) 
+
 version: '3.7'
 services:
 
+  # Create a hub and then have multiple nodes connect to it so that
+  # we can run parallel tests.
   selenium:
-    image: selenium/standalone-chrome:3.141.59-xenon
-    ports: ['4444:4444']
-    # Debug version enables VNC ability.
-    #image: selenium/standalone-chrome-debug:3.141.59-xenon
-    #ports: ['4444:4444', '5900:5900']
+    image: selenium/hub:3.141.59-xenon
+    ports:
+      - 4444:4444
+    networks:
+      - bravendev
+    environment:
+     GRID_MAX_SESSION: 200
+     GRID_DEBUG: 'true'
+     START_XVFB: 'false'
+#    # Disable noisy logs.
+#    #logging:
+#    #  driver: none
+
+  # Run multiple nodes by scaling it. E.g.: docker-compose scale chrome=4
+  # Prob wants to use the # of cores available on your compuger: sysctl hw.logicalcpu
+  chrome:
+    # Note: change to selenium/node-chrome-debug if you want a VNC server to be able to see what's going on.
+    image: selenium/node-chrome:3.141.59-xenon
     volumes:
       - /dev/shm:/dev/shm
     networks:
       - bravendev
+    depends_on:
+      - selenium
     environment:
-     # Increasing these lets you spawn more concurrent chrome sessions until you hit memory limits.
+     HUB_HOST: selenium
+     HUB_PORT: 4444
+     # This is for chrome headless mode. See: https://github.com/SeleniumHQ/docker-selenium/issues/567
+     START_XVFB: 'false'
+     GRID_DEBUG: 'true'
      NODE_MAX_INSTANCES: 100
      NODE_MAX_SESSION: 100
-    # Disable noisy logs.
-    logging:
-      driver: none
-    
-  # To run load tests, just run: 
-  #   docker-compose up    
-  # To run a single test, run:
-  #   TEST_NAME=name docker-compose up
+     
   canvastests:
     build: .
-    command: bundle exec rspec ${TEST_NAME:-spec}
+    ##################################
+    # INSTRUCTIONS FOR USE:
+    ##################################
+    # Run this with docker-compose up -d
+    # Wait for the hub and first node to be up. Scale the
+    # nodes to more than one if you want to increase concurrency, e.g.: 
+    # docker-compose scale chrome=3
+    # Then run: docker-compose exec canvastests bash
+    # Followed by: bundle exec rspec <test_name>
     environment: 
       - SELENIUM_HOST=selenium
       - SELENIUM_PORT=4444

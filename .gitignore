@@ -7,6 +7,10 @@
 # Ignore bundler config.
 /.bundle
 
+# Ignore the various test input files (aka a file of real emails to test with)
+/spec/test_inputs/*
+!/spec/test_inputs/.keep
+
 # Ignore the default SQLite database.
 /db/*.sqlite3
 /db/*.sqlite3-journal

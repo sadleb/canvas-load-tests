@@ -94,11 +94,31 @@ RSpec.configure do |config|
   # Instead of things like expect(page).to have_content("blah"), you should use expect(session).to have_content("blah")
   config.include Capybara::DSL
 
-  # Point Capybara at our remote hosted web app to test against
   config.before(:each) do
+
+    ################
+    # IMPORTANT: 
+    ###############
+    # To run the load tests in this suite, add the following file with an email address per line that exists in course_id
+    # This controls the level of concurrency/load. Adding more emails will cause a bigger load test to run.
+    file_with_emails=File.expand_path('test_inputs/emails.txt', __dir__)
+    @course_id=57
+    unless File.file?(file_with_emails)
+      raise "To run these load tests, create a '#{file_with_emails}' file in the spec folder."
+        "Add an a list of emails to use (one per line) who are in course #{@course_id}. "
+        "The number of emails in there controls the load generated. "
+        "E.g. 30 emails means any given test will run with 30 concurrent users." 
+    end
+
+    @emails = Queue.new
+    File.open(file_with_emails).each { |line| @emails << line.strip! unless line.blank? || line.start_with?("#") }
+    @num_concurrent_users = @emails.size # Note: you could also reduce the concurrency by changing this to be some hardcoded value so that it only runs through a subset of the emails
+
+    # Point Capybara at our remote hosted web app to test against
     Capybara.app_host = "#{ENV['TEST_APP_ROOT_URL']}:#{ENV['TEST_PORT']}"
     Capybara.run_server = false # We're running against a remote app, don't boot the rack application
     Capybara.default_max_wait_time = 30 # seconds to wait for AJAX calls to modify the DOM. We want things to fail on the app server, not on our end.
+
   end
  
   config.after(:each) do

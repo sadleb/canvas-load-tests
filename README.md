@@ -10,11 +10,13 @@ First edit docker-compose.yml `TEST_APP_ROOT_URL` and `TEST_PORT` to point at th
 server you want to load test. TODO: pass in the ENV vars so you dont have to edit the file.
 
 To setup the list of user logins, add the following file with an email address per 
-line that exists in @course_id set in spec/rails_helper.rb:
+line that exists in `@course_id` set in `spec/rails_helper.rb`:
 
 ```test_inputs/emails.txt```
 
-Note: This controls the level of concurrency/load. Adding more emails will cause a bigger load test to run.
+[Here](https://drive.google.com/a/bebraven.org/file/d/1nw1nzPnGxaxC1JcOuXcPL0a2K_RCT1XM/view?usp=sharing) is an example file you can use for course 57.
+
+*Note:* This controls the level of concurrency/load. Adding more emails will cause a bigger load test to run.
 
 Now bring up the containers / environment:
 

@@ -25,10 +25,7 @@ describe "Proof Of Concept", :capybara do
       benchmark.report("module - onboard to braven:") { session.visit "/courses/#{@course_id}/pages/onboard-to-braven" }
       benchmark.report("module - network like a pro:") { session.visit "/courses/#{@course_id}/pages/network-like-a-pro" }
       benchmark.report("assignments:") { session.visit "/courses/#{@course_id}/assignments" }
-      # TODO: is there a more dynamic way to load some assignment by title for whatever course is configured? 
-      if @course_id == 57
-        benchmark.report("assignment - H2C:") { session.visit "/courses/57/assignments/1284" }
-      end
+      benchmark.report("assignment - H2C:") { session.visit "/courses/#{@course_id}/assignments/#{ASSIGNMENT_FOR_COURSE[@course_id]}" }
       benchmark.report("grades:") { session.visit "/courses/#{@course_id}/grades" }
     end
 

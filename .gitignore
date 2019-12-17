@@ -36,3 +36,5 @@
 *.swp
 *.swo
 
+# Mac stuff
+.DS_Store

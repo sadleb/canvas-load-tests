@@ -33,7 +33,7 @@ services:
     networks:
       - bravendev
     environment:
-     GRID_MAX_SESSION: 200
+     GRID_MAX_SESSION: 500 # Intended for a Grid of 5 nodes with a max session of 100 per
      GRID_DEBUG: 'true'
      START_XVFB: 'false'
 #    # Disable noisy logs.
@@ -56,7 +56,7 @@ services:
      HUB_PORT: 4444
      # This is for chrome headless mode. See: https://github.com/SeleniumHQ/docker-selenium/issues/567
      START_XVFB: 'false'
-     GRID_DEBUG: 'true'
+     # Increasing these lets you spawn more concurrent chrome sessions until you hit memory limits.
      NODE_MAX_INSTANCES: 100
      NODE_MAX_SESSION: 100
      
@@ -74,8 +74,10 @@ services:
     environment: 
       - SELENIUM_HOST=selenium
       - SELENIUM_PORT=4444
-      - TEST_APP_ROOT_URL=http://canvasweb
-      - TEST_PORT=3000
+      - TEST_APP_ROOT_URL=https://stagingportal.bebraven.org
+      - TEST_PORT=443
+#      - TEST_APP_ROOT_URL=http://canvasweb
+#      - TEST_PORT=3000
     volumes:
       - bundle_cache:/bundle
       - .:/app

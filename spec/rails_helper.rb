@@ -103,7 +103,7 @@ RSpec.configure do |config|
     # To run the load tests in this suite, add the following file with an email address per line that exists in course_id
     # This controls the level of concurrency/load. Adding more emails will cause a bigger load test to run.
     file_with_emails=File.expand_path('test_inputs/emails.txt', __dir__)
-    @course_id=57
+    @course_id=71
     unless File.file?(file_with_emails)
       raise "To run these load tests, create a '#{file_with_emails}' file in the spec folder."
         "Add an a list of emails to use (one per line) who are in course #{@course_id}. "

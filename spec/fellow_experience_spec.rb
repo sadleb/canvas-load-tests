@@ -55,12 +55,15 @@ describe "Load Test - fellow experience", :capybara, js: true do
           }
 
           times <<  Benchmark.measure() {
-            assignment_h2c_path = "/courses/57/assignments/#{ASSIGNMENT_FOR_COURSE[@course_id]}"
+            assignment_h2c_path = "/courses/#{@course_id}/assignments/#{ASSIGNMENT_FOR_COURSE[@course_id]}"
             session.visit assignment_h2c_path
             assignment_selector = "#assignment_#{ASSIGNMENT_FOR_COURSE[@course_id]}"
             expect(session).to have_selector(:css, "#assignment_show"), "expected #assignment_show for #{email} on assignment = #{assignment_h2c_path}"
             expect(session).to have_selector(:css, ".bz-assignment"), "expected .bz-assignment for #{email} on assignment = #{assignment_h2c_path}"
-            expect(session).to have_selector(:css, "#submit_assignment"), "expected #submit_assignment for #{email} on assignment = #{assignment_h2c_path}"
+            # TODO: not sure why this isn't working. Get it working.
+            #expect(session).to have_selector(:css, "table.bz-ajax-loaded-rubric .criterion"), "expected inline rubrics to be loaded for #{email} on assignment = #{assignment_h2c_path}"
+            # For assignments already past due or submitted, the option to submit won't be there.
+            #expect(session).to have_selector(:css, "#submit_assignment"), "expected #submit_assignment for #{email} on assignment = #{assignment_h2c_path}"
           }
 
           times <<  Benchmark.measure() {
